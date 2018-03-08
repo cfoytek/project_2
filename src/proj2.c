@@ -32,6 +32,7 @@ int main()
 
 	while((ch = getch()) != 'q')
         {
+	    //addch(ch);
             switch (ch)
             {
               case KEY_LEFT:
@@ -46,14 +47,15 @@ int main()
               case KEY_DOWN:
                 y++;
                 break;
-        }
+	      default:
+		waddch(my_win, (char)ch);
+ 	    }
+
           wmove(my_win, y, x);
           wrefresh(my_win);
+          
         }
-
-
     
 	endwin();			/* End curses mode		  */
-
 	return 0;
 }
