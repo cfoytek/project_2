@@ -1,17 +1,17 @@
-CC = g++
+CC = gcc
 INC = -Iinclude
 OBJDIR = obj
 SRCDIR = src
-CC_FLAGS = -w -pedantic $(INC)
+CC_FLAGS = -w -pedantic $(INC) -lncurses
 
 EXEC = Vim++
-SOURCES = $(shell find $(SRCDIR) -name '*.cpp')
-OBJECTS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SOURCES))
+SOURCES = $(shell find $(SRCDIR) -name '*.c')
+OBJECTS = $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SOURCES))
 
 $(EXEC): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $(EXEC)
+	$(CC) $(OBJECTS) $(CC_FLAGS) -o $(EXEC)
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | make-folder
+$(OBJDIR)/%.o: $(SRCDIR)/%.c | make-folder
 	$(CC) $(CC_FLAGS) -c $< -o $@
 
 clean:
