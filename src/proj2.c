@@ -13,49 +13,51 @@ WINDOW *create_newwin(int height, int width, int starty, int startx)
 
 int main()
 {	int ch;
-	WINDOW *my_win;
+	WINDOW *e_win; //Editor window
 	int x = 2;
         int y = 2;
 
 	initscr();			/* Start curses mode 		*/
-	cbreak();
+	//cbreak();			/* Enable character at a time buffering */
 	raw();				/* Line buffering disabled	*/
 	keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
 	noecho();			/* Don't echo() while we do getch */
 
-    	printw("Press q  to quit\n");
+    printw("Press q  to quit\n");
 	refresh();
 
-	my_win = create_newwin(30, 70, y, x);
-	wmove(my_win, y, x);
-	wrefresh(my_win);
+	e_win = create_newwin(30, 70, y, x);
+	scrollok(e_win, TRUE);
+	wmove(e_win, y, x);
+	wrefresh(e_win);
 
-	while((ch = getch()) != 'q')
-        {
+	while((ch = getch()) != 'q'){
 	    //addch(ch);
-            switch (ch)
-            {
-              case KEY_LEFT:
-                x--;
-                break;
-              case KEY_RIGHT:
-                x++;
-                break;
-              case KEY_UP:
-                y--;
-                break;
-              case KEY_DOWN:
-                y++;
-                break;
-	      default:
-		waddch(my_win, (char)ch);
+        switch (ch){
+          case KEY_LEFT:
+            x--;
+            break;
+          case KEY_RIGHT:
+            x++;
+            break;
+          case KEY_UP:
+            y--;
+            break;
+          case KEY_DOWN:
+            y++;
+            break;
+          case KEY_ENTER:
+          	break;
+          case KEY_BACKSPACE:
+          	break;
+      	  default:
+			waddch(e_win, (char)ch);
+			x++;
+			wrefresh(e_win);
  	    }
-
-          wmove(my_win, y, x);
-          wrefresh(my_win);
-          
-        }
-    
+ 	    wmove(e_win, y, x);
+        wrefresh(e_win);   
+    }
 	endwin();			/* End curses mode		  */
 	return 0;
 }
