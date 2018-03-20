@@ -1,4 +1,4 @@
-#include<stdio.h>
+#include <stdio.h>
 #include <ncurses.h>
 
 void print_coords(WINDOW *, int, int);
@@ -14,8 +14,9 @@ WINDOW *create_newwin(int height, int width, int starty, int startx)
 
 int main(){	
 	int ch;
-	enum modes {NORMAL = 0, INSERT = 1}; //0 = Normal, 1 = Insert
+	enum modes {COMMAND = 0, INSERT = 1}; //0 = Command, 1 = Insert
 	WINDOW *e_win; //Editor window
+  WINDOW *stat_win;
 	int x = 0;
   int y = 1;
 	int maxx, maxy, xbound, ybound;

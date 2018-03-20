@@ -10,6 +10,7 @@
 void read_file_by_line(FILE *);
 
 int main(int argc, char **argv) {
+    
     const char *file_name = "foo.txt";
     char line[255];
     FILE *inFile;
