@@ -1,0 +1,5 @@
+Hello World!
+I am an Ncurses program
+I read from a file
+and then print to an Ncurses screen
+This is the last line of the file
