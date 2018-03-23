@@ -84,11 +84,11 @@ int main(int argc, char **argv) {
         break;
       case KEY_UP:
         if(y > 0) {
-          line--;
+          advance_cursor_line(-1);
           y--;
         }
         else if((y == 0) && (buf_ystart > 0)) {
-          line--;
+          advance_cursor_line(-1);
           buf_yend--;
           buf_ystart--;
           scrl(-1);
@@ -98,12 +98,12 @@ int main(int argc, char **argv) {
         break;
       case KEY_DOWN:
         if(y < ybound - 2) {
-          line++;
+          advance_cursor_line(1);
           y++;
         }
         else if((y == ybound - 2) && (y <= buf_yend)) {
           if(!(buf_yend == linecount)) {
-            line++;
+            advance_cursor_line(1);
             buf_yend++;
             buf_ystart++;
             scrl(1);
