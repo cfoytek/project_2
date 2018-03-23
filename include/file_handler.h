@@ -26,11 +26,11 @@ void write_file(const char *file_name);
  * Free all memory associated with the file
  * buffer.
  **/
-void destory_buf();
+void free_buf();
 /**
- * This overridden destory_buf will first write
+ * This overridden free_buf will first write
  * the file buffer to the file file_name before
  * destorying the buffer.
  **/
-void destroy_buf(const char *file_name);
+void free_buf(const char *file_name);
 #endif

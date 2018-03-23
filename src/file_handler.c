@@ -51,7 +51,7 @@ void write_file(const char *file_name) {
     fclose(fp);
 }
 
-void destory_buf() {
+void free_buf() {
     int line_count = sizeof(file_buf) / sizeof(file_buf[0]);
     int i;
     for(i = 0; i < line_count; i++) {
@@ -61,7 +61,7 @@ void destory_buf() {
     file_buf = NULL;
 }
 
-void destory_buf(const char *file_name) {
+void free_buf(const char *file_name) {
     write_file(file_name);
-    destory_buf();
+    free_buf();
 }
