@@ -1,7 +1,9 @@
 #include "file_handler.h"
+#include "edit_buffer.h"
 #include <ncurses.h>
 
 void print_coords(WINDOW *, int, int);
+void refresh_text(WINDOW *win, int startline, int endline);
 
 WINDOW *create_newwin(int height, int width, int starty, int startx)
 {
@@ -29,7 +31,10 @@ int main(int argc, char **argv) {
   WINDOW *stat_win;
 	int x = 0;
   int y = 0;
-	int maxx, maxy, xbound, ybound;
+	int maxx; //Max screen width, width of terminal
+  int maxy; //Max screen height, height of terminal
+  int xbound; //Editor window width
+  int ybound; //Editor window height
 
 	initscr();			/* Start curses mode */
 	//cbreak();			/* Enable character at a time buffering */
@@ -37,13 +42,16 @@ int main(int argc, char **argv) {
 	keypad(stdscr, TRUE);		/* We get F1, F2 etc.. */
 	noecho();			/* Don't echo() while we do getch */
 
-	getmaxyx(stdscr, maxy, maxx);
+	getmaxyx(stdscr, maxy, maxx); //Get maximum dimensions for terminal
 	//Set boundaries for editor window
-	xbound = maxx - 1;
-	ybound = maxy - 5;
+	xbound = maxx - 1; //Set editor width to max width - 1
+	ybound = maxy - 4; //Set editor height to max height - 5
+  //Set boundaries for file buffer
+  buf_ystart = 0;
+  buf_yend = ybound - 1;
 	e_win = create_newwin(ybound, xbound, y, x);
   move(ybound + 1, 0);
-  printw("Press ESC to quit\n");
+  printw("Num Lines Read To Buf: %d", linecount);
 	refresh();
 	scrollok(e_win, TRUE);
   idlok(e_win, TRUE);
@@ -53,6 +61,8 @@ int main(int argc, char **argv) {
 	getbegyx(e_win, y, x);
 	print_coords(e_win, x, y);
 	wmove(e_win, y, x);
+  refresh_text(e_win, buf_ystart, buf_yend);
+  
   wrefresh(e_win);
 	while((ch = getch()) != 27) { //27 is char code for ESC or ALT
     //Using ESC to exit will cause a delay because ncurses will
@@ -66,27 +76,42 @@ int main(int argc, char **argv) {
           beep();
         break;
       case KEY_RIGHT:
-        if(x < xbound)
+        if(x < xbound - 1)
           x++;
         else
           beep();
         break;
       case KEY_UP:
-        if(y > 0)
+        if(y > 0) {
           y--;
+        }
+        else if((y == 0) && (buf_ystart > 0)) {
+            buf_yend--;
+            buf_ystart--;
+            scrl(-1);
+        }
         else
           beep();
         break;
       case KEY_DOWN:
-        if(y < ybound)
+        if(y < ybound - 1) {
           y++;
+        }
+        else if((y == ybound - 1) && (y <= buf_yend)) {
+          if(!(buf_yend == linecount - 1)) {
+            buf_yend++;
+            buf_ystart++;
+            scrl(1);
+          }
+          else
+            beep();  
+        }
         else
           beep();
         break;
       case 10:
       case KEY_ENTER:
         waddch(e_win, '\n');
-        ++y;
         x = 0;
         break;
       case 127: //Backspace char code
@@ -112,6 +137,7 @@ int main(int argc, char **argv) {
         }
 		}
     print_coords(e_win, x, y); //Print current window coordinates
+    refresh_text(e_win, buf_ystart, buf_yend);
 		wmove(e_win, y, x);
 		wrefresh(e_win);   
   }
@@ -133,4 +159,13 @@ void print_coords(WINDOW * win, int x, int y) {
 	move(maxy + 1, maxx - 7);
 	printw("(%d, %d)", x, y);
   refresh();
+}
+
+void refresh_text(WINDOW *win, int startline, int endline) {
+  int i;
+  wmove(win, 0, 0);
+  for(i = startline; i < endline; i++) {
+    char *line = file_buf[i];
+    wprintw(win, line);
+  }
 }
