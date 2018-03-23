@@ -50,8 +50,9 @@ int main(int argc, char **argv) {
   buf_ystart = 0;
   buf_yend = ybound - 1;
 	e_win = create_newwin(ybound, xbound, y, x);
+  line = 0;
   move(ybound + 1, 0);
-  printw("Num Lines Read To Buf: %d", linecount);
+  printw("Buffer Line: %d Buffer Col: ", line, line_char);
 	refresh();
 	scrollok(e_win, TRUE);
   idlok(e_win, TRUE);
@@ -83,22 +84,26 @@ int main(int argc, char **argv) {
         break;
       case KEY_UP:
         if(y > 0) {
+          line--;
           y--;
         }
         else if((y == 0) && (buf_ystart > 0)) {
-            buf_yend--;
-            buf_ystart--;
-            scrl(-1);
+          line--;
+          buf_yend--;
+          buf_ystart--;
+          scrl(-1);
         }
         else
           beep();
         break;
       case KEY_DOWN:
-        if(y < ybound - 1) {
+        if(y < ybound - 2) {
+          line++;
           y++;
         }
-        else if((y == ybound - 1) && (y <= buf_yend)) {
-          if(!(buf_yend == linecount - 1)) {
+        else if((y == ybound - 2) && (y <= buf_yend)) {
+          if(!(buf_yend == linecount)) {
+            line++;
             buf_yend++;
             buf_ystart++;
             scrl(1);
@@ -111,23 +116,16 @@ int main(int argc, char **argv) {
         break;
       case 10:
       case KEY_ENTER:
-        waddch(e_win, '\n');
-        x = 0;
+        //call insert_newline_at_cursor()
         break;
       case 127: //Backspace char code
       case KEY_DC:
       case KEY_BACKSPACE:
-        if(x > 0)
-          x--;
-        else if(y > 0) {
-          x = xbound;
-          y--;
-        }
-        else
-          beep();
-        mvwdelch(e_win, y, x);
+        //Remove character before cursor in buffer
         break;
       default:
+        //Add character at cursor in buffer
+        //call inser_char_at_cursor
         waddch(e_win, (char)ch);
         if(x < xbound)
           x++;
@@ -136,6 +134,8 @@ int main(int argc, char **argv) {
           y++;
         }
 		}
+    move(ybound + 1, 0);
+    printw("Buffer Line: %d Buffer Col: %d", line, line_char);
     print_coords(e_win, x, y); //Print current window coordinates
     refresh_text(e_win, buf_ystart, buf_yend);
 		wmove(e_win, y, x);
