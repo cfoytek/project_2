@@ -1,5 +1,4 @@
-#include <file_handler.h>
-
+#include "file_handler.h"
 void read_file(const char *file_name, int *line_count) {
     file_buf = NULL;
     FILE *fp = NULL;
@@ -31,6 +30,7 @@ void read_file(const char *file_name, int *line_count) {
         strcpy(file_buf[i], line);
     }
     *line_count = line_counter;
+    f_lines = line_counter;
 }
 
 void write_file(const char *file_name) {
@@ -41,9 +41,8 @@ void write_file(const char *file_name) {
         fprintf(stderr, "Cannot open file for writing.\n%s", strerror(errno));
         exit(1);
     }
-    line_count = sizeof(file_buf) / sizeof(file_buf[0]);
-    int i;
-    while(i < line_count) {
+    int i = 0;
+    while(i < f_lines) {
         const char *line = file_buf[i];
         fputs(line, fp);
         i++;
@@ -61,7 +60,7 @@ void free_buf() {
     file_buf = NULL;
 }
 
-void free_buf(const char *file_name) {
+void write_file_free_buf(const char *file_name) {
     write_file(file_name);
     free_buf();
 }

@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include "file_handler.h"
 #include <ncurses.h>
 
 void print_coords(WINDOW *, int, int);
@@ -12,7 +12,17 @@ WINDOW *create_newwin(int height, int width, int starty, int startx)
   return (local_win);
 }
 
-int main(){	
+int main(int argc, char **argv) {	
+  char *filename;
+  int linecount;
+  if(argc != 2) {
+    //Don't read file, initialize with empty buffer.
+  }
+  else {
+    filename = argv[1];
+    //Read file to buffer
+    read_file(filename, &linecount);
+  }
 	int ch;
 	enum modes {COMMAND = 0, INSERT = 1}; //0 = Command, 1 = Insert
 	WINDOW *e_win; //Editor window

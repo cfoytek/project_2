@@ -11,7 +11,8 @@
 #include <errno.h>
 #include <stdbool.h>
 
-const int M_LN_SIZE = 156;
+static const int M_LN_SIZE = 156;
+static int f_lines;
 char **file_buf;
 extern int errno;
 /**
@@ -32,5 +33,5 @@ void free_buf();
  * the file buffer to the file file_name before
  * destorying the buffer.
  **/
-void free_buf(const char *file_name);
+void write_file_free_buf(const char *file_name);
 #endif
