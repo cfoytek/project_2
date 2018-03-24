@@ -27,7 +27,7 @@ void write_file(const char *file_name);
  * Free all memory associated with the file
  * buffer.
  **/
-void free_buf();
+void free_buf(char ** file_buf);
 /**
  * This overridden free_buf will first write
  * the file buffer to the file file_name before

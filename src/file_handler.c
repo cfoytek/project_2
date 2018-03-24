@@ -50,8 +50,9 @@ void write_file(const char *file_name) {
     fclose(fp);
 }
 
-void free_buf() {
+void free_buf(char ** file_buf) {
     int line_count = sizeof(file_buf) / sizeof(file_buf[0]);
+    line_count = 37;
     int i;
     for(i = 0; i < line_count; i++) {
         free(file_buf[i]);
@@ -62,5 +63,5 @@ void free_buf() {
 
 void write_file_free_buf(const char *file_name) {
     write_file(file_name);
-    free_buf();
+    free_buf(file_buf);
 }

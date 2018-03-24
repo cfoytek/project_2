@@ -16,11 +16,12 @@ WINDOW *create_newwin(int height, int width, int starty, int startx)
 }
 
 int main(int argc, char **argv) {	
+  int linecount = 0;
   if(argc != 2) {
     //Don't read file, initialize with empty buffer.
   }
   else {
-    filename = argv[1];
+    char *filename = argv[1];
     //Read file to buffer
     read_file(filename, &linecount);
   }
@@ -30,6 +31,9 @@ int main(int argc, char **argv) {
   WINDOW *stat_win;
 	int x = 0;
   int y = 0;
+  int maxx;
+  int maxy;
+  
 	
 
 	initscr();			/* Start curses mode */
@@ -40,8 +44,8 @@ int main(int argc, char **argv) {
 
 	getmaxyx(stdscr, maxy, maxx); //Get maximum dimensions for terminal
 	//Set boundaries for editor window
-	xbound = maxx - 1; //Set editor width to max width - 1
-	ybound = maxy - 4; //Set editor height to max height - 5
+	int xbound = maxx - 1; //Set editor width to max width - 1
+	int ybound = maxy - 4; //Set editor height to max height - 5
   //Set boundaries for file buffer
   buf_ystart = 0;
   buf_yend = ybound - 1;
@@ -128,7 +132,7 @@ int main(int argc, char **argv) {
       default:
         //Add character at cursor in buffer
         //call inser_char_at_cursor
-        insert_char_at_cursor(ch, xbound, file_buf);
+        insert_char_at_cursor(ch, xbound, file_buf, linecount);
         if(x < xbound)
           x++;
         else {
