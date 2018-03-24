@@ -3,7 +3,7 @@
 #include "file_handler.h"
 int line_char; //Absolute character number in line
 int line; //Absolute line number in buffer
-int line_size;
+int line_size; //Size fo the current line
 
 int buf_ystart; //Start of buffer chunk to print to screen
 int buf_yend; //End of buffer chunk to print to screen

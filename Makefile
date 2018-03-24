@@ -2,7 +2,7 @@ CC = gcc
 INC = -Iinclude
 OBJDIR = obj
 SRCDIR = src
-CC_FLAGS = -w -pedantic $(INC) -lncurses
+CC_FLAGS = -w -pedantic -g $(INC) -lncurses
 
 EXEC = Vim++
 SOURCES = $(shell find $(SRCDIR) -name '*.c')

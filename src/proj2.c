@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
 	e_win = create_newwin(ybound, xbound, y, x);
   line = 0;
   move(ybound + 1, 0);
-  printw("Buffer Line: %d Buffer Col: ", line, line_char);
+  printw("Buffer Line: %d Buffer Col: %d LN SIZE: %d", line, line_char, line_size);
 	refresh();
 	scrollok(e_win, TRUE);
   idlok(e_win, TRUE);
@@ -71,14 +71,18 @@ int main(int argc, char **argv) {
     //keypress before accepting that the key is ESC
     switch (ch) {
       case KEY_LEFT:
-        if(x > 0)
+        if(x > 0) {
+          line_char--;
           x--;
+        }
         else
           beep();
         break;
       case KEY_RIGHT:
-        if(x < xbound - 1)
+        if(x < xbound - 1 && line_char < line_size - 1) {
+          line_char++;
           x++;
+        }
         else
           beep();
         break;
@@ -126,7 +130,7 @@ int main(int argc, char **argv) {
       default:
         //Add character at cursor in buffer
         //call inser_char_at_cursor
-        waddch(e_win, (char)ch);
+        insert_char_at_cursor(ch);
         if(x < xbound)
           x++;
         else {
@@ -135,7 +139,7 @@ int main(int argc, char **argv) {
         }
 		}
     move(ybound + 1, 0);
-    printw("Buffer Line: %d Buffer Col: %d", line, line_char);
+    printw("Buffer Line: %d Buffer Col: %d LN SIZE: %d", line, line_char, line_size);
     print_coords(e_win, x, y); //Print current window coordinates
     refresh_text(e_win, buf_ystart, buf_yend);
 		wmove(e_win, y, x);
