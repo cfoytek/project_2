@@ -1,7 +1,7 @@
 #ifndef _EDIT_BUFFER_H
 #define _EDIT_BUFFER_H
 #include "file_handler.h"
-int line_char; //Absolute character number in line
+int x_pos; //Absolute character number in line
 int line; //Absolute line number in buffer
 int line_size; //Size fo the current line
 
@@ -10,7 +10,8 @@ int buf_yend; //End of buffer chunk to print to screen
 
 void advance_cursor_char(int numpos); //Advance cursor one position in the x direction
 void advance_cursor_line(int numpos); //Advance cursor one position in the y direction
-void insert_char_at_cursor(char c);
+void insert_char_at_cursor(char c, int eol, char **file_buf);
+void update_line_size();
 void delete_line_at_cursor();
 void insert_line_after_current_line(); //Allocate new line in buffer, shift every line after current down one
 void insert_newline_at_cursor(); //Allocate new line in buffer, insert newline character at buffer, copy all text to end of line to new string, shift all lines down one, insert copied line after previous line

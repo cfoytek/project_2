@@ -1,5 +1,6 @@
 #include "file_handler.h"
 #include "edit_buffer.h"
+#include "globals.h"
 #include <ncurses.h>
 
 void print_coords(WINDOW *, int, int);
@@ -15,8 +16,6 @@ WINDOW *create_newwin(int height, int width, int starty, int startx)
 }
 
 int main(int argc, char **argv) {	
-  char *filename;
-  int linecount;
   if(argc != 2) {
     //Don't read file, initialize with empty buffer.
   }
@@ -31,10 +30,7 @@ int main(int argc, char **argv) {
   WINDOW *stat_win;
 	int x = 0;
   int y = 0;
-	int maxx; //Max screen width, width of terminal
-  int maxy; //Max screen height, height of terminal
-  int xbound; //Editor window width
-  int ybound; //Editor window height
+	
 
 	initscr();			/* Start curses mode */
 	//cbreak();			/* Enable character at a time buffering */
@@ -51,8 +47,10 @@ int main(int argc, char **argv) {
   buf_yend = ybound - 1;
 	e_win = create_newwin(ybound, xbound, y, x);
   line = 0;
+  update_line_size();
+  
   move(ybound + 1, 0);
-  printw("Buffer Line: %d Buffer Col: %d LN SIZE: %d", line, line_char, line_size);
+  printw("Buffer Line: %d Buffer Col: %d LN SIZE: %d", line, x_pos, line_size);
 	refresh();
 	scrollok(e_win, TRUE);
   idlok(e_win, TRUE);
@@ -61,26 +59,26 @@ int main(int argc, char **argv) {
 
 	getbegyx(e_win, y, x);
 	print_coords(e_win, x, y);
-	wmove(e_win, y, x);
   refresh_text(e_win, buf_ystart, buf_yend);
-  
+  wmove(e_win, y, x);
   wrefresh(e_win);
 	while((ch = getch()) != 27) { //27 is char code for ESC or ALT
     //Using ESC to exit will cause a delay because ncurses will
     //Wait to see if the character is ALT and wait for another 
     //keypress before accepting that the key is ESC
+    update_line_size();
     switch (ch) {
       case KEY_LEFT:
         if(x > 0) {
-          line_char--;
+          x_pos--;
           x--;
         }
         else
           beep();
         break;
       case KEY_RIGHT:
-        if(x < xbound - 1 && line_char < line_size - 1) {
-          line_char++;
+        if(x < xbound - 1 && x_pos < line_size - 1) {
+          x_pos++;
           x++;
         }
         else
@@ -130,7 +128,7 @@ int main(int argc, char **argv) {
       default:
         //Add character at cursor in buffer
         //call inser_char_at_cursor
-        insert_char_at_cursor(ch);
+        insert_char_at_cursor(ch, xbound, file_buf);
         if(x < xbound)
           x++;
         else {
@@ -139,7 +137,7 @@ int main(int argc, char **argv) {
         }
 		}
     move(ybound + 1, 0);
-    printw("Buffer Line: %d Buffer Col: %d LN SIZE: %d", line, line_char, line_size);
+    printw("Buffer Line: %d Buffer Col: %d LN SIZE: %d", line, x_pos, line_size);
     print_coords(e_win, x, y); //Print current window coordinates
     refresh_text(e_win, buf_ystart, buf_yend);
 		wmove(e_win, y, x);
@@ -171,5 +169,6 @@ void refresh_text(WINDOW *win, int startline, int endline) {
   for(i = startline; i < endline; i++) {
     char *line = file_buf[i];
     wprintw(win, line);
+    wrefresh(win);
   }
 }
