@@ -1,0 +1,37 @@
+Implement File Handling:
+    * Read file line-by-line to file buffer
+    * Write entire file buffer to file on disk, overwritting the file
+
+Implement writing file contents to screen:
+    * Write however many lines to the ncurses
+      screen as there is space for (i.e. if ncurses screen is 20 lines tall,
+      write 20 lines to the screen)
+    * Keep track of the first and the last line displayed, when the text
+      is scrolled past the end of the window, write the next or previous
+      line from the buffer to the screen
+    * What do we do if a line in the buffer is longer than the number of
+      columns on the screen? Maybe wrap it to the next line, but then how
+      do we keep track of whether or not the line is wrapped? Ncurses will
+      see it as 2 seperate lines and we'll end up pulling the wrong line
+      for editing. We might need to track which line we're on another way.
+
+Implement editing contents on screen:
+    * Just an idea, but maybe keep track of the line the cursor
+      is on, and pull that line from the buffer to get it ready 
+      to be edited, then when the user edits it on the screen,
+      copy the newly edited line back to the file buffer
+
+Implement command mode:
+    * Press ESC while in insert mode to switch to command
+      mode. Basically just change a "mode" variable, and then
+      check at the beginning of the main loop which mode we're
+      in.
+    * Can still move cursor in command mode, but all keypresses
+      are interpreted as commands
+    * Remove line can just remove the line from the file buffer 
+      corresponding to the line the cursor is on, then update the 
+      screen with what the buffer now has
+    * Same with insert line
+    * Copy can just copy the line to a seperate copy buffer
+    * Paste can just insert whatever is in the copy buffer
+      into the file buffer at the cursor position

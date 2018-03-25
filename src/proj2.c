@@ -17,16 +17,18 @@ WINDOW *create_newwin(int height, int width, int starty, int startx)
 
 int main(int argc, char **argv) {	
   int linecount = 0;
+  char *filename;
   if(argc != 2) {
     //Don't read file, initialize with empty buffer.
   }
   else {
-    char *filename = argv[1];
+    filename = argv[1];
     //Read file to buffer
     read_file(filename, &linecount);
   }
 	int ch;
 	enum modes {COMMAND = 0, INSERT = 1}; //0 = Command, 1 = Insert
+  int mode = COMMAND;
 	WINDOW *e_win; //Editor window
   WINDOW *stat_win;
 	int x = 0;
@@ -54,7 +56,7 @@ int main(int argc, char **argv) {
   update_line_size(file_buf);
   
   move(ybound + 1, 0);
-  printw("Buffer Line: %d Buffer Col: %d LN SIZE: %d", line, x_pos, line_size);
+  printw("MODE:%d Buffer Line: %d Buffer Col: %d LN SIZE: %d", mode, line, x_pos, line_size);
 	refresh();
 	scrollok(e_win, TRUE);
   idlok(e_win, TRUE);
@@ -66,89 +68,170 @@ int main(int argc, char **argv) {
   refresh_text(e_win, buf_ystart, buf_yend);
   wmove(e_win, y, x);
   wrefresh(e_win);
-	while((ch = getch()) != 27) { //27 is char code for ESC or ALT
-    //Using ESC to exit will cause a delay because ncurses will
-    //Wait to see if the character is ALT and wait for another 
-    //keypress before accepting that the key is ESC
+	while(true) {
+    ch = getch();
     update_line_size(file_buf);
-    switch (ch) {
-      case KEY_LEFT:
-        if(x > 0) {
-          x_pos--;
-          x--;
-        }
-        else
-          beep();
-        break;
-      case KEY_RIGHT:
-        if(x < xbound - 1 && x_pos < line_size - 1) {
-          x_pos++;
-          x++;
-        }
-        else
-          beep();
-        break;
-      case KEY_UP:
-        if(y > 0) {
-          advance_cursor_line(-1);
-          y--;
-        }
-        else if((y == 0) && (buf_ystart > 0)) {
-          advance_cursor_line(-1);
-          buf_yend--;
-          buf_ystart--;
-          scrl(-1);
-        }
-        else
-          beep();
-        break;
-      case KEY_DOWN:
-        if(y < ybound - 2) {
-          advance_cursor_line(1);
-          y++;
-        }
-        else if((y == ybound - 2) && (y <= buf_yend)) {
-          if(!(buf_yend == linecount)) {
-            advance_cursor_line(1);
-            buf_yend++;
-            buf_ystart++;
-            scrl(1);
+    switch(mode){
+      case COMMAND:
+        switch (ch) {
+          case 'w':
+            write_file(filename,file_buf, line);
+            break;
+          case 'd':
+          //call edit_buffer delete_line_at_cursor
+            break;
+          case 'n':
+          //insert new line after current line
+            break;
+          case 'y':
+          //copy edit_buffer
+            break;
+          case 'p':
+          //paste from buffer
+            break;
+          case '?':
+          //search for string
+            break;
+          case 'q':
+            endwin();
+            exit(0);
+          case 'i':
+            mode = INSERT;
+            break;
+          case KEY_LEFT:
+            if(x > 0) {
+              x_pos--;
+              x--;
+            }
+            else
+              beep();
+            break;
+          case KEY_RIGHT:
+            if(x < xbound - 1 && x_pos < line_size - 1) {
+              x_pos++;
+              x++;
+            }
+            else
+              beep();
+            break;
+          case KEY_UP:
+            if(y > 0) {
+              advance_cursor_line(-1);
+              y--;
+            }
+            else if((y == 0) && (buf_ystart > 0)) {
+              advance_cursor_line(-1);
+              buf_yend--;
+              buf_ystart--;
+              scrl(-1);
+            }
+            else
+              beep();
+            break;
+          case KEY_DOWN:
+            if(y < ybound - 2) {
+              advance_cursor_line(1);
+              y++;
+            }
+            else if((y == ybound - 2) && (y <= buf_yend)) {
+              if(!(buf_yend == linecount)) {
+                advance_cursor_line(1);
+                buf_yend++;
+                buf_ystart++;
+                scrl(1);
+              }
+              else
+                beep();  
+            }
+            else
+              beep();
+            break;
           }
-          else
-            beep();  
-        }
-        else
-          beep();
-        break;
-      case 10:
-      case KEY_ENTER:
-        //call insert_newline_at_cursor()
-        break;
-      case 127: //Backspace char code
-      case KEY_DC:
-      case KEY_BACKSPACE:
-        //Remove character before cursor in buffer
-        break;
-      default:
-        //Add character at cursor in buffer
-        //call inser_char_at_cursor
-        file_buf = insert_char_at_cursor(ch, xbound, file_buf, &linecount);
-        if(x < xbound - 1)
-          x++;
-        else {
-          x = 1;
-          y++;
-        }
-		}
+          break;
+        case INSERT:
+          switch (ch) {
+            case KEY_LEFT:
+              if(x > 0) {
+                x_pos--;
+                x--;
+              }
+              else
+                beep();
+              break;
+            case KEY_RIGHT:
+              if(x < xbound - 1 && x_pos < line_size - 1) {
+                x_pos++;
+                x++;
+              }
+              else
+                beep();
+              break;
+            case KEY_UP:
+              if(y > 0) {
+                advance_cursor_line(-1);
+                y--;
+              }
+              else if((y == 0) && (buf_ystart > 0)) {
+                advance_cursor_line(-1);
+                buf_yend--;
+                buf_ystart--;
+                scrl(-1);
+              }
+              else
+                beep();
+              break;
+            case KEY_DOWN:
+              if(y < ybound - 2) {
+                advance_cursor_line(1);
+                y++;
+              }
+              else if((y == ybound - 2) && (y <= buf_yend)) {
+                if(!(buf_yend == linecount)) {
+                  advance_cursor_line(1);
+                  buf_yend++;
+                  buf_ystart++;
+                  scrl(1);
+                }
+                else
+                  beep();  
+              }
+              else
+                beep();
+              break;
+            case 10:
+            case KEY_ENTER:
+              //call insert_newline_at_cursor()
+              break;
+            case 127: //Backspace char code
+            case KEY_DC:
+            case KEY_BACKSPACE:
+              //Remove character before cursor in buffer
+              break;
+            case 27:
+              mode = COMMAND;
+              break;
+            default:
+              //Add character at cursor in buffer
+              //call inser_char_at_cursor
+              file_buf = insert_char_at_cursor(ch, xbound, file_buf, &linecount);
+              if(x < xbound - 1)
+                x++;
+              else {
+                x = 1;
+                y++;
+              }
+          }
+          break;
+    }
+    
     move(ybound + 1, 0);
-    printw("Buffer Line: %d Buffer Col: %d LN SIZE: %d", line, x_pos, line_size);
+    printw("MODE:%d Buffer Line: %d Buffer Col: %d LN SIZE: %d",mode, line, x_pos, line_size);
     print_coords(e_win, x, y); //Print current window coordinates
     refresh_text(e_win, buf_ystart, buf_yend);
 		wmove(e_win, y, x);
 		wrefresh(e_win);   
-  }
-	endwin();			/* End curses mode		  */
-	return 0;
+  }			
+  exit(0);
 }
 
 /**

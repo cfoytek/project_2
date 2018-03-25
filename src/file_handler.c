@@ -33,9 +33,8 @@ void read_file(const char *file_name, int *line_count) {
     f_lines = line_counter;
 }
 
-void write_file(const char *file_name) {
+void write_file(const char *file_name, char **file_buf, int line_count) {
     FILE *fp = NULL;
-    int line_count;
     fp = fopen(file_name, "w");
     if(fp == NULL) {
         fprintf(stderr, "Cannot open file for writing.\n%s", strerror(errno));
@@ -61,7 +60,7 @@ void free_buf(char ** file_buf) {
     file_buf = NULL;
 }
 
-void write_file_free_buf(const char *file_name) {
-    write_file(file_name);
-    free_buf(file_buf);
-}
+// void write_file_free_buf(const char *file_name) {
+//     write_file(file_name);
+//     free_buf(file_buf);
+// }

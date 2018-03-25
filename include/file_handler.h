@@ -22,7 +22,7 @@ void read_file(const char *file_name, int *line_count);
 /**
  * Write buffer's contents to file.
  **/
-void write_file(const char *file_name);
+void write_file(const char *file_name, char **file_buf, int line_count);
 /**
  * Free all memory associated with the file
  * buffer.
@@ -33,5 +33,5 @@ void free_buf(char ** file_buf);
  * the file buffer to the file file_name before
  * destorying the buffer.
  **/
-void write_file_free_buf(const char *file_name);
+// void write_file_free_buf(const char *file_name);
 #endif
