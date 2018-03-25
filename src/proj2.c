@@ -57,7 +57,13 @@ int main(int argc, char **argv) {
   update_line_size(file_buf);
   
   move(ybound + 1, 0);
-  printw("MODE:%d Buffer Line: %d Buffer Col: %d LN SIZE: %d", mode, line, x_pos, line_size);
+  if(mode == 0){
+    printw("MODE: COMMAND Buffer Line: %d Buffer Col: %d LN SIZE: %d",line, x_pos, line_size);
+  }
+  else{
+    printw("MODE: INSERT Buffer Line: %d Buffer Col: %d LN SIZE: %d",line, x_pos, line_size);
+  }
+
 	refresh();
 	scrollok(e_win, TRUE);
   idlok(e_win, TRUE);
@@ -91,14 +97,18 @@ int main(int argc, char **argv) {
           //insert new line after current line
             break;
           case 'y':
-            copybuf = file_buf[line];
+            copybuf = (char*) malloc(sizeof(char)*(strlen(file_buf[line])+1));
+            copybuf = strncpy(copybuf,file_buf[line],strlen(file_buf[line]));
+            copybuf[strlen(file_buf[line])+1] = '\0';
             break;
           case 'p':
             file_buf = insert_line_after_current_line(&linecount,file_buf);
+            file_buf[line] = (char*)realloc(file_buf[line], sizeof(char)*(strlen(copybuf)+1));
             y++;
             x_pos = 0;
             x = 0;
-            file_buf[line] = copybuf;
+            file_buf[line] = strncpy(file_buf[line], copybuf, strlen(copybuf));
+            file_buf[line][strlen(copybuf)] = '\0';
             break;
           case '?':
           //search for string
@@ -258,7 +268,12 @@ int main(int argc, char **argv) {
     }
     
     move(ybound + 1, 0);
-    printw("MODE:%d Buffer Line: %d Buffer Col: %d LN SIZE: %d",mode, line, x_pos, line_size);
+    if(mode == 0){
+      printw("MODE: COMMAND Buffer Line: %d Buffer Col: %d LN SIZE: %d",line, x_pos, line_size);
+    }
+    else{
+      printw("MODE: INSERT Buffer Line: %d Buffer Col: %d LN SIZE: %d",line, x_pos, line_size);
+    }
     print_coords(e_win, x, y); //Print current window coordinates
     refresh_text(e_win, buf_ystart, buf_yend, file_buf);
 		wmove(e_win, y, x);
