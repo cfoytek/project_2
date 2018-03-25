@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
       case COMMAND:
         switch (ch) {
           case 'w':
-            write_file(filename,file_buf, line);
+            write_file(filename,file_buf, linecount);
             break;
           case 'd':
           //call edit_buffer delete_line_at_cursor
