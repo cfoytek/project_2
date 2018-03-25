@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
   buf_yend = ybound - 1;
 	e_win = create_newwin(ybound, xbound, y, x);
   line = 0;
-  update_line_size();
+  update_line_size(file_buf);
   
   move(ybound + 1, 0);
   printw("Buffer Line: %d Buffer Col: %d LN SIZE: %d", line, x_pos, line_size);
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
     //Using ESC to exit will cause a delay because ncurses will
     //Wait to see if the character is ALT and wait for another 
     //keypress before accepting that the key is ESC
-    update_line_size();
+    update_line_size(file_buf);
     switch (ch) {
       case KEY_LEFT:
         if(x > 0) {
@@ -132,8 +132,8 @@ int main(int argc, char **argv) {
       default:
         //Add character at cursor in buffer
         //call inser_char_at_cursor
-        insert_char_at_cursor(ch, xbound, file_buf, linecount);
-        if(x < xbound)
+        file_buf = insert_char_at_cursor(ch, xbound, file_buf, &linecount);
+        if(x < xbound - 1)
           x++;
         else {
           x = 1;

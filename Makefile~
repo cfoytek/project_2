@@ -12,8 +12,8 @@ OBJECTS = $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SOURCES))
 $(EXEC): $(OBJECTS)
 	$(CC) $(OBJECTS) $(CC_FLAGS) -o $(EXEC)
 	
-$(OBJDIR)/proj2.o: $(SRCDIR)/proj2.c | make-folder
-	$(CC) $(CC_FLAGS) -c $< -o $@
+obj/proj2.o: src/proj2.c | make-folder
+	$(CC) $(CC_FLAGS) - c $< -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c $(HEADER)/%.h| make-folder
 	$(CC) $(CC_FLAGS) -c $< -o $@
