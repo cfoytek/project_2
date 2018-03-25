@@ -13,12 +13,11 @@
 
 static const int M_LN_SIZE = 156;
 static int f_lines;
-char **file_buf;
 extern int errno;
 /**
  * Fill buffer with contents of file.
  **/
-void read_file(const char *file_name, int *line_count);
+char** read_file(const char *file_name, int *line_count);
 /**
  * Write buffer's contents to file.
  **/

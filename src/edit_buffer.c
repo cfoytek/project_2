@@ -35,10 +35,17 @@ char** insert_line_after_current_line(int *linecount, char **file_buf) {
     advance_cursor_line(1);//Move cursor down one line
     file_buf[line] = (char *)malloc(sizeof(char) * 3);
     file_buf[line][0] = '\n';
+    file_buf[line][1] = '\0';
     update_line_size(file_buf);
     return file_buf;
 }
 
+char** delete_line_at_cursor(char **file_buf){
+    file_buf[line] = (char *)realloc(file_buf[line], sizeof(char) * 2);
+    file_buf[line][0] = '\n';
+    file_buf[line][1] = '\0';
+    return file_buf;
+}
 void update_line_size(char** file_buf) {
     line_size = strlen(file_buf[line]);
 }

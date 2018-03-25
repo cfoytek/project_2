@@ -4,7 +4,7 @@
 #include <ncurses.h>
 
 void print_coords(WINDOW *, int, int);
-void refresh_text(WINDOW *win, int startline, int endline);
+void refresh_text(WINDOW *win, int startline, int endline, char** file_buf);
 
 WINDOW *create_newwin(int height, int width, int starty, int startx)
 {
@@ -17,6 +17,7 @@ WINDOW *create_newwin(int height, int width, int starty, int startx)
 
 int main(int argc, char **argv) {	
   int linecount = 0;
+  char ** file_buf;
   char *filename;
   if(argc != 2) {
     //Don't read file, initialize with empty buffer.
@@ -24,7 +25,7 @@ int main(int argc, char **argv) {
   else {
     filename = argv[1];
     //Read file to buffer
-    read_file(filename, &linecount);
+    file_buf = read_file(filename, &linecount);
   }
 	int ch;
 	enum modes {COMMAND = 0, INSERT = 1}; //0 = Command, 1 = Insert
@@ -65,7 +66,7 @@ int main(int argc, char **argv) {
 
 	getbegyx(e_win, y, x);
 	print_coords(e_win, x, y);
-  refresh_text(e_win, buf_ystart, buf_yend);
+  refresh_text(e_win, buf_ystart, buf_yend, file_buf);
   wmove(e_win, y, x);
   wrefresh(e_win);
 	while(true) {
@@ -78,9 +79,15 @@ int main(int argc, char **argv) {
             write_file(filename,file_buf, linecount);
             break;
           case 'd':
-          //call edit_buffer delete_line_at_cursor
+            file_buf = delete_line_at_cursor(file_buf);
+            x_pos = 0;
+            x = 0;
             break;
           case 'n':
+            file_buf = insert_line_after_current_line(&linecount,file_buf);
+            y++;
+            x_pos = 0;
+            x = 0;
           //insert new line after current line
             break;
           case 'y':
@@ -227,7 +234,7 @@ int main(int argc, char **argv) {
     move(ybound + 1, 0);
     printw("MODE:%d Buffer Line: %d Buffer Col: %d LN SIZE: %d",mode, line, x_pos, line_size);
     print_coords(e_win, x, y); //Print current window coordinates
-    refresh_text(e_win, buf_ystart, buf_yend);
+    refresh_text(e_win, buf_ystart, buf_yend, file_buf);
 		wmove(e_win, y, x);
 		wrefresh(e_win);   
   }			
@@ -250,7 +257,7 @@ void print_coords(WINDOW * win, int x, int y) {
   refresh();
 }
 
-void refresh_text(WINDOW *win, int startline, int endline) {
+void refresh_text(WINDOW *win, int startline, int endline, char ** file_buf) {
   int i;
   wmove(win, 0, 0);
   for(i = startline; i < endline; i++) {

@@ -1,6 +1,6 @@
 #include "file_handler.h"
-void read_file(const char *file_name, int *line_count) {
-    file_buf = NULL;
+char** read_file(const char *file_name, int *line_count) {
+    char **file_buf = NULL;
     FILE *fp = NULL;
     int i;
     int line_counter = 0;
@@ -31,6 +31,7 @@ void read_file(const char *file_name, int *line_count) {
     }
     *line_count = line_counter;
     f_lines = line_counter;
+    return file_buf;
 }
 
 void write_file(const char *file_name, char **file_buf, int line_count) {
@@ -41,7 +42,7 @@ void write_file(const char *file_name, char **file_buf, int line_count) {
         exit(1);
     }
     int i = 0;
-    while(i < f_lines) {
+    while(i < line_count) {
         const char *line = file_buf[i];
         fputs(line, fp);
         i++;
