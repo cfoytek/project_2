@@ -57,3 +57,29 @@ void advance_cursor_line(int numpos) {
 void advance_cursor_char(int numpos) {
     x_pos += numpos;
 }
+char** delete_char_at_cursor(char **file_buf, int *x_pos, int line){
+    int i;
+    for(i = (*x_pos)-1; i < line_size; i++){
+        file_buf[line][i] = file_buf[line][i+1];
+    }
+    (*x_pos)--;
+    return file_buf;
+}
+
+char** insert_newline_at_cursor(char** file_buf, int *x_pos, int *line, int line_size, int linecount){
+    int i;
+    int numChars = (line_size) - (*x_pos);
+    char* temp_buf;
+    temp_buf = (char*) malloc(sizeof(char)*(numChars));
+    for(i = (*x_pos); i <= line_size; i++){
+        temp_buf[i-(*x_pos)] = file_buf[(*line)][i];
+        file_buf[*(line)][i] = NULL;
+    }
+    file_buf[(*line)] = (char*)realloc(file_buf[*(line)], sizeof(char)*(*x_pos + 1));
+    file_buf[(*line)][(*x_pos)] = '\n';
+    file_buf[(*line)][(*x_pos)+1] = '\0';
+    file_buf = insert_line_after_current_line(&linecount,file_buf);
+    file_buf[(*line)] = temp_buf;
+    (*x_pos) = 0;
+    return file_buf;
+}

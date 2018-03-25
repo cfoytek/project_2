@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
   int y = 0;
   int maxx;
   int maxy;
-  
+  char* copybuf;
 	
 
 	initscr();			/* Start curses mode */
@@ -91,10 +91,14 @@ int main(int argc, char **argv) {
           //insert new line after current line
             break;
           case 'y':
-          //copy edit_buffer
+            copybuf = file_buf[line];
             break;
           case 'p':
-          //paste from buffer
+            file_buf = insert_line_after_current_line(&linecount,file_buf);
+            y++;
+            x_pos = 0;
+            x = 0;
+            file_buf[line] = copybuf;
             break;
           case '?':
           //search for string
@@ -176,7 +180,12 @@ int main(int argc, char **argv) {
             case KEY_UP:
               if(y > 0) {
                 advance_cursor_line(-1);
+                update_line_size(file_buf);
                 y--;
+                if(x > line_size- 1){
+                  x_pos = line_size -1;
+                  x = line_size- 1;
+                }
               }
               else if((y == 0) && (buf_ystart > 0)) {
                 advance_cursor_line(-1);
@@ -190,6 +199,11 @@ int main(int argc, char **argv) {
             case KEY_DOWN:
               if(y < ybound - 2) {
                 advance_cursor_line(1);
+                update_line_size(file_buf);
+                if(x > line_size - 1){
+                  x_pos = line_size - 1;
+                  x = line_size - 1;
+                }
                 y++;
               }
               else if((y == ybound - 2) && (y <= buf_yend)) {
@@ -207,12 +221,19 @@ int main(int argc, char **argv) {
               break;
             case 10:
             case KEY_ENTER:
-              //call insert_newline_at_cursor()
+              file_buf = insert_newline_at_cursor(file_buf,&x_pos,&line,line_size,linecount);
+              y++;
+              x = 0;
               break;
             case 127: //Backspace char code
             case KEY_DC:
             case KEY_BACKSPACE:
-              //Remove character before cursor in buffer
+              if(x > 0){
+                file_buf = delete_char_at_cursor(file_buf, &x_pos, line);
+                x--;
+              }
+              else
+                beep();
               break;
             case 27:
               mode = COMMAND;
@@ -220,12 +241,17 @@ int main(int argc, char **argv) {
             default:
               //Add character at cursor in buffer
               //call inser_char_at_cursor
-              file_buf = insert_char_at_cursor(ch, xbound, file_buf, &linecount);
-              if(x < xbound - 1)
-                x++;
-              else {
-                x = 1;
-                y++;
+              if((line_size == xbound) && (x_pos < xbound - 2)){
+                beep();
+              }
+              else{
+                file_buf = insert_char_at_cursor(ch, xbound, file_buf, &linecount);
+                if(x < xbound - 1)
+                  x++;
+                else {
+                  x = 1;
+                  y++;
+                }
               }
           }
           break;
