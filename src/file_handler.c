@@ -21,6 +21,7 @@ char** read_file(const char *file_name, int *line_count) {
         file_buf[0] = (char*)malloc(sizeof(char)*2);
         file_buf[0][0] = '\n';
         file_buf[0][1] = '\0';
+        *line_count = 1;
         return file_buf;
     }
     rewind(fp);
@@ -35,6 +36,10 @@ char** read_file(const char *file_name, int *line_count) {
         line_len = strlen(line);
         file_buf[i] = malloc((line_len + 1) * sizeof(char));
         strcpy(file_buf[i], line);
+    }
+    if(file_buf[line_counter - 1][line_len] != '\n') {
+        file_buf[line_counter - 1] = (char *) realloc(file_buf[line_counter - 1], sizeof(char) * (line_len + 1));
+        file_buf[line_counter - 1][line_len] = '\n';
     }
     *line_count = line_counter;
     f_lines = line_counter;

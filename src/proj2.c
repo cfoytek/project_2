@@ -20,7 +20,8 @@ int main(int argc, char **argv) {
   char ** file_buf;
   char *filename;
   if(argc != 2) {
-    //Don't read file, initialize with empty buffer.
+    printf("Usage: %s [filename]\n", argv[0]);
+    exit(1);
   }
   else {
     filename = argv[1];
@@ -36,7 +37,7 @@ int main(int argc, char **argv) {
   int y = 0;
   int maxx;
   int maxy;
-  char* copybuf;
+  char* copybuf = NULL;
 	
 
 	initscr();			/* Start curses mode */
@@ -104,13 +105,19 @@ int main(int argc, char **argv) {
           //insert new line after current line
             break;
           case 'y':
-            free(copybuf);
+            if(copybuf != NULL) {
+              free(copybuf);
+            }
             copybuf = NULL;
             copybuf = (char*) malloc(sizeof(char)*(strlen(file_buf[line])+1));
             copybuf = strncpy(copybuf,file_buf[line],strlen(file_buf[line])+1);
             copybuf[strlen(file_buf[line])+1] = '\0';
             break;
           case 'p':
+            if(copybuf == NULL) {
+              beep();
+              break;
+            }
             if(buf_yend < ybound-1){
               buf_yend++;
             }
