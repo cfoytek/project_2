@@ -51,17 +51,21 @@ int main(int argc, char **argv) {
 	int ybound = maxy - 4; //Set editor height to max height - 5
   //Set boundaries for file buffer
   buf_ystart = 0;
-  buf_yend = ybound - 1;
+  if(linecount >= ybound - 1){
+    buf_yend = ybound-1;
+  }
+  else
+    buf_yend = linecount;
 	e_win = create_newwin(ybound, xbound, y, x);
   line = 0;
   update_line_size(file_buf);
   
   move(ybound + 1, 0);
   if(mode == 0){
-    printw("MODE: COMMAND Buffer Line: %d Buffer Col: %d LN SIZE: %d",line, x_pos, line_size);
+    printw("--COMMAND-- GROUP 5 FILE:%s",filename);
   }
   else{
-    printw("MODE: INSERT Buffer Line: %d Buffer Col: %d LN SIZE: %d",line, x_pos, line_size);
+    printw("--INSERT--  GROUP 5 FILE:%s",filename);
   }
 
 	refresh();
@@ -90,6 +94,9 @@ int main(int argc, char **argv) {
             x = 0;
             break;
           case 'n':
+            if(buf_yend < ybound-1){
+              buf_yend++;
+            }
             file_buf = insert_line_after_current_line(&linecount,file_buf);
             y++;
             x_pos = 0;
@@ -97,11 +104,22 @@ int main(int argc, char **argv) {
           //insert new line after current line
             break;
           case 'y':
+            free(copybuf);
+            copybuf = NULL;
             copybuf = (char*) malloc(sizeof(char)*(strlen(file_buf[line])+1));
-            copybuf = strncpy(copybuf,file_buf[line],strlen(file_buf[line]));
+            copybuf = strncpy(copybuf,file_buf[line],strlen(file_buf[line])+1);
             copybuf[strlen(file_buf[line])+1] = '\0';
             break;
           case 'p':
+            if(buf_yend < ybound-1){
+              buf_yend++;
+            }
+            if(y == ybound - 2){
+              scrl(1);
+              buf_yend++;
+              buf_ystart++;
+              y--;
+            }
             file_buf = insert_line_after_current_line(&linecount,file_buf);
             file_buf[line] = (char*)realloc(file_buf[line], sizeof(char)*(strlen(copybuf)+1));
             y++;
@@ -150,6 +168,10 @@ int main(int argc, char **argv) {
               beep();
             break;
           case KEY_DOWN:
+            if(y == linecount-1){
+              beep();
+              break;
+            }
             if(y < ybound - 2) {
               advance_cursor_line(1);
               y++;
@@ -207,6 +229,10 @@ int main(int argc, char **argv) {
                 beep();
               break;
             case KEY_DOWN:
+              if(y == linecount-1){
+                beep();
+                break;
+              }
               if(y < ybound - 2) {
                 advance_cursor_line(1);
                 update_line_size(file_buf);
@@ -231,7 +257,16 @@ int main(int argc, char **argv) {
               break;
             case 10:
             case KEY_ENTER:
-              file_buf = insert_newline_at_cursor(file_buf,&x_pos,&line,line_size,linecount);
+              if(buf_yend < ybound-1){
+                buf_yend++;
+              }
+              if(y == ybound - 2){
+                scrl(1);
+                buf_yend++;
+                buf_ystart++;
+                y--;
+              }
+              file_buf = insert_newline_at_cursor(file_buf,&x_pos,&line,line_size,&linecount);
               y++;
               x = 0;
               break;
@@ -255,7 +290,19 @@ int main(int argc, char **argv) {
                 beep();
               }
               else{
+                int templinecount = linecount;
                 file_buf = insert_char_at_cursor(ch, xbound, file_buf, &linecount);
+                if(linecount > templinecount){
+                  if(buf_yend < ybound-1){
+                    buf_yend++;
+                  }
+                  else{
+                    scrl(1);
+                    buf_yend++;
+                    buf_ystart++;
+                    y--;
+                  }
+                }
                 if(x < xbound - 1)
                   x++;
                 else {
@@ -269,10 +316,10 @@ int main(int argc, char **argv) {
     
     move(ybound + 1, 0);
     if(mode == 0){
-      printw("MODE: COMMAND Buffer Line: %d Buffer Col: %d LN SIZE: %d",line, x_pos, line_size);
+      printw("--COMMAND-- GROUP 5 FILE:%s",filename);
     }
     else{
-      printw("MODE: INSERT Buffer Line: %d Buffer Col: %d LN SIZE: %d",line, x_pos, line_size);
+      printw("--INSERT--  GROUP 5 FILE:%s",filename);
     }
     print_coords(e_win, x, y); //Print current window coordinates
     refresh_text(e_win, buf_ystart, buf_yend, file_buf);

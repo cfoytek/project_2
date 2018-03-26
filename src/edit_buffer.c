@@ -66,7 +66,7 @@ char** delete_char_at_cursor(char **file_buf, int *x_pos, int line){
     return file_buf;
 }
 
-char** insert_newline_at_cursor(char** file_buf, int *x_pos, int *line, int line_size, int linecount){
+char** insert_newline_at_cursor(char** file_buf, int *x_pos, int *line, int line_size, int *linecount){
     int i;
     int numChars = (line_size) - (*x_pos);
     char* temp_buf;
@@ -78,7 +78,7 @@ char** insert_newline_at_cursor(char** file_buf, int *x_pos, int *line, int line
     file_buf[(*line)] = (char*)realloc(file_buf[*(line)], sizeof(char)*(*x_pos + 1));
     file_buf[(*line)][(*x_pos)] = '\n';
     file_buf[(*line)][(*x_pos)+1] = '\0';
-    file_buf = insert_line_after_current_line(&linecount,file_buf);
+    file_buf = insert_line_after_current_line(linecount,file_buf);
     file_buf[(*line)] = temp_buf;
     (*x_pos) = 0;
     return file_buf;
