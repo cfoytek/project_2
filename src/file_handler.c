@@ -16,6 +16,13 @@ char** read_file(const char *file_name, int *line_count) {
     while(fgets(line, sizeof(line), fp) != NULL) {
         line_counter++;
     }
+    if(line_counter == 0){
+        file_buf = (char**)malloc(sizeof(char *));
+        file_buf[0] = (char*)malloc(sizeof(char)*2);
+        file_buf[0][0] = '\n';
+        file_buf[0][1] = '\0';
+        return file_buf;
+    }
     rewind(fp);
     //Allocate space for lines in buffer
     file_buf = malloc(line_counter * sizeof(char *));
