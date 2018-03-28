@@ -163,7 +163,12 @@ int main(int argc, char **argv) {
           case KEY_UP:
             if(y > 0) {
               advance_cursor_line(-1);
+              update_line_size(file_buf);
               y--;
+              if(x > line_size- 1){
+                x_pos = line_size -1;
+                x = line_size- 1;
+              }
             }
             else if((y == 0) && (buf_ystart > 0)) {
               advance_cursor_line(-1);
@@ -181,6 +186,11 @@ int main(int argc, char **argv) {
             }
             if(y < ybound - 2) {
               advance_cursor_line(1);
+              update_line_size(file_buf);
+              if(x > line_size - 1) {
+                x_pos = line_size - 1;
+                x = line_size - 1;
+              }
               y++;
             }
             else if((y == ybound - 2) && (y <= buf_yend)) {
