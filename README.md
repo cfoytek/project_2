@@ -25,5 +25,5 @@ Due to time constraints several things in the text editor are not possible. Firs
 The above design choice and aforementioned time constraints also led to our file-buffer handling code and screen display code being more tightly coupled than they should be. While still working on the projects I thought about ways that it could be redesigned to decouple these two subsystems to the point that the buffer handling code could be dropped into another project as a plug-and-play backend for another user interface -- possibly a GUI. 
 
 ## Redesign
-> This section is under construction and ongoing. I'm currently finishing up final exams for my senior semester but I have plans this summer to redesign and re-implement this project from scratch using a gap buffer to make writing to the file buffer less expensive, and to decouple the backend file handling from the front end display code. 
+> This section is under construction and ongoing. I have plans to redesign and re-implement this project from scratch using a gap buffer to make writing to the file buffer less expensive, and to decouple the backend file handling from the front end display code. 
 
